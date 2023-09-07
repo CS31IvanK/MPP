@@ -1,0 +1,36 @@
+# frozen_string_literal: true
+# спробую поексперементувати з хемапами і додам цикл на всю гру
+puts("We`ll play, until you enter 'STOP'")
+options = ['rock', 'scissors', 'paper']
+winnerhash = {
+  'rock' => 'scissors',
+  'scissors' => 'paper',
+  'paper' => 'rock'
+}
+
+user_choice = ARGV[0]&.downcase
+flag=true
+until user_choice&.casecmp("STOP")
+  if !flag
+    user_choice=nil
+  else
+    flag=false
+  end
+# поки кращого нема: при першому заході флаг просто змінюємо і йдемо з наявною строкою, іначше обнулюємо попередню гру
+  if user_choice.nil?
+    puts("Enter paper, scissors or rock")
+    user_choice=gets.chomp
+  end
+  comp_choice = options.sample
+
+  if !options.include?(user_choice)
+    puts "Invalid input or end"
+  elsif user_choice == comp_choice
+    puts "Draw! You - #{user_choice}, me - #{comp_choice}"
+  elsif winnerhash[user_choice] == comp_choice
+    puts "You won! You - #{user_choice}, me - #{comp_choice}"
+  else
+    puts "You lost(. You - #{user_choice}, me - #{comp_choice}"
+  end
+
+end
