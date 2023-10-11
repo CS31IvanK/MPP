@@ -1,77 +1,62 @@
 # frozen_string_literal: true
-def pie_division (pie, squarepieces, raisins, n, pieces, start_i, start_j)
-  # function to find one piece
-
-  i = start_i
-  j = start_j
-  puts "i=#{i}"
-  puts "j=#{j}"
-  # we need here to loop until we make all the pieces
-  until n > raisins
-
-    puts "loop for arr n=#{n}"
-    puts pieces.inspect
-
-    if pieces[n][0].nil? && pieces[n][1].nil?
-
-      pieces[n][0] = i
-      pieces[n][1] = j
-      puts "Empty el" + pieces.inspect
-      # n += 1
-      # next
-
-    end
-    # until reached square
-    until (pieces[n][0] - start_i + 1) * (pieces[n][1] - start_j + 1) == squarepieces
-      puts "SQ #{(pieces[n][0] - start_i + 1) * (pieces[n][1] - start_j + 1)}"
-      # check if reached the end of lines
-      unless j < pie[n].length
-        i += 1
-        j -= 0
-        unless i < pie.length
-          # if end of array and not reached the square of last piece then return, false decision
-          puts pieces.inspect
-          puts "No more place "
-
-          # return nil
-        end
-      end
-
-      # if no extra raisins possible
-      if !pie[i][j].eql?("0") || pieces[n].to_s.include?("0")
-        puts "No extra raisin"
-        puts pieces.inspect
-        # add a pie part
-        if !pieces[n].include?([i, j])
-          pieces[n] = [i, j]
-        end
-
-        puts "Add a pie part"
-        puts pieces.inspect
-      else
-        if (pieces[n][0] + 1) * (pieces[n][1] + 2) <= squarepieces
-          # if there is an extra raisins on the way we change the way
-          pieces[n][0] += 1
-          pieces[n][1] = squarepieces / pieces[n][0] - 1
-        end
-      end
-      j += 1
-    end
-
-    puts squarepieces
-    puts " i = #{pieces[n][0]}"
-    puts " j = #{pieces[n][1]}"
-    n += 1
-    buf = pie_division(pie, squarepieces, raisins, n, pieces, i, j)
-    if buf.nil?
-      puts "Way not found "
-      n -= 1
-      next
-    end
-    pieces = buf
+def f (pie, pieces, square, n, raisin, starti, startj)
+  #puts " start i=#{starti}, j=#{startj}"
+  if square.div(pie.first.length) <= 1
+    i = starti
+  else
+    i = square.div(pie[].length) - 1 + starti
   end
+  while i < pie.length
+    j = startj + (square / (i - starti + 1)) - 1
+    #puts "FROM square=#{square}, i=#{i}"
+    #puts "Get j=#{j}"
+    flag = 0
+    for iter in starti...i + 1
+      for jter in startj...j + 1
+        #puts pie[iter][jter]
+        if pie[iter][jter].eql? "0"
+          #puts "flag=#{flag}"
+          flag += 1
+        end
+      end
+    end
+    if flag <= 1
+      pieces[n] = [i, j]
+      n += 1
+      #puts "INDEED  n=#{n}, raisin=#{raisin}"
+      if n == raisin
+        return pieces
+      end
+      #puts "before count  i=#{i}, j=#{j}"
+      j += 1
+      unless j < pie.first.length
+        i += 1
+        j = 0
+        #puts "NOW CHECK  i=#{i}, j=#{j}"
+        unless i < pie.length
 
-  pieces
+          if n == raisin # useless
+            return pieces
+          else
+            return nil
+          end
+        end
+      end
+      #puts pieces.inspect
+      #puts "n=#{n}"
+      buf = f(pie, pieces, square, n, raisin, i, j)
+      #puts " n=#{n}"
+      if buf
+        #puts "return"
+        #puts pieces.inspect
+        return pieces
+      end
+      #puts "GONE WRONG"
+    end
+    i += 1
+  end
+  #puts pieces.inspect
+  nil
 end
 
 # entering & splitting
@@ -107,20 +92,20 @@ while true
 end
 
 @pie.pop
+puts @pie.inspect
 height = @pie.length
 # square of pie, need to divide to raisins
 square = width * height
-puts "WTF IS THE KILOMETER #{square}"
 # if not dividing
 raise "Impossible to solve" unless square % raisins == 0
 # count n pieces
 squarepieces = square / raisins
 # now we need to use greedy algorithm to find solution
-puts squarepieces
-@pieces = Array.new(raisins) { Array.new(squarepieces) }
+puts "square_p=#{squarepieces}"
+@pieces = Array.new(raisins) { Array.new(2) }
 n = 0
 i = 0
 j = 0
-@pieces = pie_division(@pie, squarepieces, raisins, n, @pieces, i, j)
+@pieces = f(@pie, @pieces, squarepieces, n, raisins, i, j)
 puts "RESULT"
 puts @pieces.inspect
