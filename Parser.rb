@@ -5,11 +5,13 @@ require 'open-uri'
 doc = Nokogiri::HTML(URI.open('https://www.hospitalsafetygrade.org/all-hospitals'))
 hospitals = doc.css('div#BlinkDBContent_849210 li a')
 CSV.open("hospitals.csv", "w") do |csv|
-  csv<<["Hospital", "URL"]
+  csv<<["ID", "Hospital", "URL"]
+  i=0
   hospitals.each do |hospital|
+    i+=1
     name = hospital.text
     url=hospital['href']
-    csv <<[name, url]
+    csv <<[i, name, url]
   end
 end
 
