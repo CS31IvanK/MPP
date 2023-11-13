@@ -9,6 +9,8 @@ CSV.open("hospitals.csv", "w") do |csv|
   i=-1
   hospitals.each do |hospital|
     i+=1
+    #docloc=Nokogiri::HTML(URI.open(''))
+    #location =  
     name = hospital.text
     url=hospital['href']
     csv <<[i, name, url]
